@@ -12,7 +12,9 @@ public class ConfigurationRouter {
 	public RouteLocator myRoutes(RouteLocatorBuilder builder) {
 	    return builder.routes()
 	    		
-	    		.route("pedido-route", r -> r.path("/pedidos/**").uri("lb://PEDIDO-SERVICE"))
+	    		.route("produto-service-route", r -> r.path("/produtos/**").uri("lb://PRODUTO-SERVICE"))
+	    		.route("carrinho-service-route", r -> r.path("/carrinhos/**").uri("lb://CARRINHO	-SERVICE"))
+	    		.route("pedido-service-route", r -> r.path("/pedidos/**").uri("lb://PEDIDO-SERVICE"))
 //	            .route(p -> p
 //	                    .path("/get")
 //	                    //.filters(f -> f.addRequestHeader("Hello", "World"))
