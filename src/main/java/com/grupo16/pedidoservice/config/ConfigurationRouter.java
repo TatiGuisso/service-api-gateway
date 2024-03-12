@@ -15,6 +15,7 @@ public class ConfigurationRouter {
 	    		.route("produto-service-route", r -> r.path("/produtos/**").uri("lb://PRODUTO-SERVICE"))
 	    		.route("carrinho-service-route", r -> r.path("/carrinhos/**").uri("lb://CARRINHO-SERVICE"))
 	    		.route("pedido-service-route", r -> r.path("/pedidos/**").uri("lb://PEDIDO-SERVICE"))
+	    		.route("pagamento-service-route", r -> r.path("/pagamentos/**").uri("lb://PAGAMENTO-SERVICE"))
 //	            .route(p -> p
 //	                    .path("/get")
 //	                    //.filters(f -> f.addRequestHeader("Hello", "World"))
