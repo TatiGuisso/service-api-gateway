@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @EnableDiscoveryClient
-@SpringBootApplication(exclude = { UserDetailsServiceAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class })
+@SpringBootApplication(exclude = { 
+		UserDetailsServiceAutoConfiguration.class, 
+		ReactiveUserDetailsServiceAutoConfiguration.class})
 public class ServiceApiGatewayApplication {
 
 	public static void main(String[] args) {
