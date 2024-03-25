@@ -3,6 +3,7 @@ package com.grupo16.pedidoservice.config.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -14,14 +15,20 @@ import org.springframework.security.web.server.context.ServerSecurityContextRepo
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 
+import com.grupo16.pedidoservice.token.TokenGateway;
+
+import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableWebFluxSecurity
+@AllArgsConstructor
 public class WebSecurityConfig {
 
+	private TokenGateway tokenGateway;
+	
 	@Bean
-	public WebFilter tokenInterceptorFilter(/*TokenGateway tokenGateway*/) {
+	public WebFilter tokenInterceptorFilter() {
 		return new TokenInterceptorFilter();
 	}
 
@@ -35,12 +42,17 @@ public class WebSecurityConfig {
 		serverHttpSecurity.csrf(CsrfSpec::disable);
 		serverHttpSecurity.securityContextRepository(securityContextRepository);
 		tokenInterceptorFilter.setSecurityContext(securityContext);
+		tokenInterceptorFilter.setTokenGateway(tokenGateway);
 
 		return serverHttpSecurity.authorizeExchange(
 				exchanges -> exchanges
 				//.anyExchange().permitAll()
-				.pathMatchers("/ale/teste").permitAll()
-				.pathMatchers("/ale/pedidos").hasRole("ADMIN")
+				.pathMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+				.pathMatchers(HttpMethod.GET, "/produtos").permitAll()
+				.pathMatchers(HttpMethod.GET, "/produtos/*").permitAll()
+				.pathMatchers(HttpMethod.POST, "/produtos").hasRole("ADMIN")
+				.pathMatchers(HttpMethod.PUT, "/produtos").hasRole("ADMIN")
+				.pathMatchers(HttpMethod.DELETE, "/produtos").hasRole("ADMIN")
 //				.anyExchange().authenticated()
 				)
 				.addFilterAt(tokenInterceptorFilter, SecurityWebFiltersOrder.AUTHORIZATION)

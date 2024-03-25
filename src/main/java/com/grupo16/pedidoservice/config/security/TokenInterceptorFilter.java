@@ -52,6 +52,7 @@ public class TokenInterceptorFilter implements WebFilter {
 		try {
 			List<String> authorizations = headers.get(HttpHeaders.AUTHORIZATION);
 			if(authorizations == null || authorizations.isEmpty()) {
+				createInvalidAutentication();
 				return filterChain.filter(exchange);
 			}
 			final String baererToken = authorizations.get(0);
@@ -64,26 +65,35 @@ public class TokenInterceptorFilter implements WebFilter {
 				addTokenInfosIntoHeader((HeaderMapRequestWrapper) requestWrapper, headersInfos);
 				
 				createAutentication(headersInfos);
+				return filterChain.filter(exchange);
 			}
+			createInvalidAutentication();
 			return filterChain.filter(exchange);
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			throw e;
+			createInvalidAutentication();
+			return filterChain.filter(exchange);
 		} 
 	} 
 
 	
 	private void createAutentication(final Map<String, String> headersInfos) {
 		String role = headersInfos.get(USUARIO_PERFIL);
-		Collection<? extends GrantedAuthority> authorities = role == null ? null : Arrays.asList(() -> "ROLE_"+role);
+		Collection<? extends GrantedAuthority> authorities = role == null ? null : Arrays.asList(() -> "ROLE_" + role);
 		Authentication auth = new UsernamePasswordAuthenticationToken("admin", null, authorities);
+		securityContext.setAuthentication(auth);
+	}
+	
+	private void createInvalidAutentication() {
+		Collection<? extends GrantedAuthority> authorities = Arrays.asList(() -> "");
+		Authentication auth = new UsernamePasswordAuthenticationToken("", null, authorities);
 		securityContext.setAuthentication(auth);
 	}
 
 	
 	private boolean isValidToken(String token) {
-		return token == null || token.isEmpty() || !token.startsWith(TOKEN_PREFIX);
+		return token != null && !token.isEmpty() && token.startsWith(TOKEN_PREFIX);
 	}
 
 	
