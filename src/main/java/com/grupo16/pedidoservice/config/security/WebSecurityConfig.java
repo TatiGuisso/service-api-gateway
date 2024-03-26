@@ -47,13 +47,18 @@ public class WebSecurityConfig {
 		return serverHttpSecurity.authorizeExchange(
 				exchanges -> exchanges
 				//.anyExchange().permitAll()
+				.pathMatchers(HttpMethod.POST, "/usuarios").permitAll()
 				.pathMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
 				.pathMatchers(HttpMethod.GET, "/produtos").permitAll()
 				.pathMatchers(HttpMethod.GET, "/produtos/*").permitAll()
 				.pathMatchers(HttpMethod.POST, "/produtos").hasRole("ADMIN")
-				.pathMatchers(HttpMethod.PUT, "/produtos").hasRole("ADMIN")
-				.pathMatchers(HttpMethod.DELETE, "/produtos").hasRole("ADMIN")
-//				.anyExchange().authenticated()
+				.pathMatchers(HttpMethod.PUT, "/produtos/*").hasRole("ADMIN")
+				.pathMatchers(HttpMethod.DELETE, "/produtos/*").hasRole("ADMIN")
+				.pathMatchers("/estoques/atualizar").hasRole("ADMIN")
+				.pathMatchers("/carrinhos/*/*").hasRole("USER")
+				.pathMatchers("/carrinhos/*").hasRole("USER")
+				.pathMatchers(HttpMethod.POST, "/pedidos").hasRole("USER")
+				.pathMatchers(HttpMethod.POST, "/pagamentos/processar").permitAll()//Na pratica deve ser protegido (configurar token especifico da plataforma de pagamento)
 				)
 				.addFilterAt(tokenInterceptorFilter, SecurityWebFiltersOrder.AUTHORIZATION)
 				.build();
